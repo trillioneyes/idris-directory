@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <sys/types.h>
 
+#include "stattypes.h"
+
 // return the sizes of various member types of struct stat for use in
 // type providers
 
@@ -23,7 +25,7 @@ char* sizeof_size_t() {
   return buf;
 }
 // Idris also must be able to free the above abomination after reading it
-void free_string(char* ptr) {
+void* free_string(char* ptr) {
   free(ptr);
 }
 
