@@ -4,7 +4,8 @@
 #include <sys/types.h>
 
 char* sizeof_size_t();
-void* free_string(char* ptr);
+void free_string(char* ptr);
+char* kind_of_copy(char*);
 size_t sizeof_dev_t();
 size_t sizeof_ino_t();
 size_t sizeof_mode_t();

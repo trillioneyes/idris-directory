@@ -25,9 +25,14 @@ char* sizeof_size_t() {
   return buf;
 }
 // Idris also must be able to free the above abomination after reading it
-void* free_string(char* ptr) {
+void free_string(char* ptr) {
   free(ptr);
 }
+// And finally, we need to have two references to the string: one as an FString
+// (which will be copied and used) and one as a Ptr (which will be passed to
+// free_string()). Since Idris copies FStrings when it retrieves Strings from
+// them, we can simply use an identity function on the pointer.
+char* kind_of_copy(char* ptr) { return ptr; }
 
 // now that we've gotten the string out of the way, hopefully we can understand
 // size_t
