@@ -18,8 +18,8 @@ readInt = readFromList . unpack
 -- access to these is rather involved. We'll define type providers here.
 -- We bind to functions defined in stattypes.c
 
-getSizeTSizeString : IO Int
-getSizeTSizeString = do
+getSizeTSize : IO Int
+getSizeTSize = do
    ptr <- getPtr
    str <- copy ptr
    free ptr
