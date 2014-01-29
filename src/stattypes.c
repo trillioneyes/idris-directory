@@ -10,8 +10,7 @@
 
 // To find the size of size_t we cannot use size_t, so we will use a string.
 // This is terrible.
-char* sizeof_size_t() {
-  size_t size = sizeof(size_t);
+char* size_to_string(size_t size) {
   // calculate the buffer size
   unsigned int bsize = 0;
   for (unsigned int i = size; i > 0; i = i/10) {
@@ -36,16 +35,16 @@ char* kind_of_copy(char* ptr) { return ptr; }
 
 // now that we've gotten the string out of the way, hopefully we can understand
 // size_t
-size_t sizeof_dev_t() { return sizeof(dev_t); }
-size_t sizeof_ino_t() { return sizeof(ino_t); }
-size_t sizeof_mode_t() { return sizeof(mode_t); }
-size_t sizeof_nlink_t() { return sizeof(nlink_t); }
-size_t sizeof_uid_t() { return sizeof(uid_t); }
-size_t sizeof_gid_t() { return sizeof(gid_t); }
-size_t sizeof_off_t() { return sizeof(off_t); }
-size_t sizeof_blksize_t() { return sizeof(blksize_t); }
-size_t sizeof_blkcnt_t() { return sizeof(blkcnt_t); }
-size_t sizeof_time_t() { return sizeof(time_t); }
+char* sizeof_dev_t() { return size_to_string(sizeof(dev_t)); }
+char* sizeof_ino_t() { return size_to_string(sizeof(ino_t)); }
+char* sizeof_mode_t() { return size_to_string(sizeof(mode_t)); }
+char* sizeof_nlink_t() { return size_to_string(sizeof(nlink_t)); }
+char* sizeof_uid_t() { return size_to_string(sizeof(uid_t)); }
+char* sizeof_gid_t() { return size_to_string(sizeof(gid_t)); }
+char* sizeof_off_t() { return size_to_string(sizeof(off_t)); }
+char* sizeof_blksize_t() { return size_to_string(sizeof(blksize_t)); }
+char* sizeof_blkcnt_t() { return size_to_string(sizeof(blkcnt_t)); }
+char* sizeof_time_t() { return size_to_string(sizeof(time_t)); }
 
 
 
