@@ -1,5 +1,6 @@
 module System.Directory.Providers
 
+import Providers
 %link C "stattypes.o"
 %include C "stattypes.h"
 
@@ -42,35 +43,35 @@ bytesToType 8 = FIntT IT64
 
 
 -- use the given foreign function and size_t to look up a C type
-useForeign : IO Ptr -> IO FTy
-useForeign getPtr = map bytesToType (getSize getPtr)
+useForeign : IO Ptr -> IO (Provider FTy)
+useForeign getPtr = map (Provide . bytesToType) (getSize getPtr)
 
-getDevT : IO FTy
+getDevT : IO (Provider FTy)
 getDevT = useForeign (mkForeign (FFun "sizeof_dev_t" [] FPtr))
 
-getInoT : IO FTy
-getInoT = useForeign (mkForeign (FFun "sizeof_ino_t" [] FPtr ))
+getInoT : IO (Provider FTy)
+getInoT = useForeign (mkForeign (FFun "sizeof_ino_t" [] FPtr))
 
-getModeT : IO FTy
-getModeT = useForeign (mkForeign (FFun "sizeof_ino_t" [] FPtr ))
+getModeT : IO (Provider FTy)
+getModeT = useForeign (mkForeign (FFun "sizeof_ino_t" [] FPtr))
 
-getNlinkT : IO FTy
-getNlinkT = useForeign (mkForeign (FFun "sizeof_nlink_t" [] FPtr ))
+getNlinkT : IO (Provider FTy)
+getNlinkT = useForeign (mkForeign (FFun "sizeof_nlink_t" [] FPtr))
 
-getUIDT : IO FTy
-getUIDT = useForeign (mkForeign (FFun "sizeof_uid_t" [] FPtr ))
+getUIDT : IO (Provider FTy)
+getUIDT = useForeign (mkForeign (FFun "sizeof_uid_t" [] FPtr))
 
-getGIDT : IO FTy
-getGIDT = useForeign (mkForeign (FFun "sizeof_gid_t" [] FPtr ))
+getGIDT : IO (Provider FTy)
+getGIDT = useForeign (mkForeign (FFun "sizeof_gid_t" [] FPtr))
 
-getOffT : IO FTy
-getOffT = useForeign (mkForeign (FFun "sizeof_off_t" [] FPtr ))
+getOffT : IO (Provider FTy)
+getOffT = useForeign (mkForeign (FFun "sizeof_off_t" [] FPtr))
 
-getBlksizeT : IO FTy
-getBlksizeT = useForeign (mkForeign (FFun "sizeof_blksize_t" [] FPtr ))
+getBlksizeT : IO (Provider FTy)
+getBlksizeT = useForeign (mkForeign (FFun "sizeof_blksize_t" [] FPtr))
 
-getBlkcntT : IO FTy
-getBlkcntT = useForeign (mkForeign (FFun "sizeof_blkcnt_t" [] FPtr ))
+getBlkcntT : IO (Provider FTy)
+getBlkcntT = useForeign (mkForeign (FFun "sizeof_blkcnt_t" [] FPtr))
 
-getTimeT : IO FTy
-getTimeT = useForeign (mkForeign (FFun "sizeof_time_t" [] FPtr ))
+getTimeT : IO (Provider FTy)
+getTimeT = useForeign (mkForeign (FFun "sizeof_time_t" [] FPtr))
