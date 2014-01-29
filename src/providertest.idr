@@ -13,6 +13,5 @@ instance Show IntTy where
 
 main : IO ()
 main = do
-  putStrLn "Beginning test..."
-  FIntT dev_t <- getDevT
+  Provide (FIntT dev_t) <- getDevT
   putStrLn $ "dev_t is " ++ show dev_t

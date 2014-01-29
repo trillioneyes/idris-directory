@@ -21,13 +21,9 @@ readInt = readFromList . unpack
 
 getSize : IO Ptr -> IO Int
 getSize getPtr = do
-   putStrLn "Producing pointer..."
    ptr <- getPtr
-   putStrLn "Pointer produced; copying string..."
    str <- copy ptr
-   putStrLn ("Copied " ++ show str ++ "; freeing pointer")
    free ptr
-   putStrLn "Freed pointer."
    return (readInt str)
   where
     copy : Ptr -> IO String
