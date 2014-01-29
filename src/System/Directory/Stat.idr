@@ -15,6 +15,9 @@ import System.Directory.Providers
 %provide (FBlkCntT : FTy) with getBlkcntT
 %provide (FTimeT : FTy) with getTimeT
 
+%include C "statbinds.h"
+%link C "statbinds.o"
+
 DevT : Type
 DevT = interpFTy FDevT
 InoT : Type
@@ -51,3 +54,23 @@ record StructStat : Type where
            (st_mtime   : TimeT) ->
            (st_ctime   : TimeT) ->
            StructStat
+
+
+-- actually needs to be a struct stat*, but we can't say that in the type :(
+adoptStructStat : Ptr -> IO StructStat
+
+stat : String -> IO StructStat
+stat path = do
+   ptr <- alloc
+   do_stat path ptr
+   result <- adoptStructStat ptr
+   free ptr
+   return result
+  where
+    alloc : IO Ptr
+    alloc = mkForeign (FFun "alloc_stat_ptr" [] FPtr)
+    do_stat : String -> Ptr -> IO ()
+    do_stat = mkForeign (FFun "stat" [FString, FPtr] FUnit)
+    free : Ptr -> IO ()
+    free = mkForeign (FFun "free_stat_ptr" [FPtr] FUnit)
+   
