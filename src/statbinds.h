@@ -1,3 +1,6 @@
+#include <sys/types.h>
+#include <sys/stat.h>
+
 dev_t get_st_dev(struct stat*s);
 ino_t get_st_ino(struct stat*s);
 mode_t get_st_mode(struct stat*s);

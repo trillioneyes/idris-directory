@@ -2,8 +2,13 @@ module System.Directory.Stat
 
 import System.Directory.Providers
 
-%include C "stattypes.h"
-%link C "stattypes.o"
+--%include C "stattypes.h"
+--%link C "stattypes.o"
+%include C "statbinds.h"
+%link C "statbinds.o"
+%dynamic "./stattypes.so"
+%dynamic "./statbinds.so"
+
 
 %language TypeProviders
 
@@ -14,12 +19,9 @@ import System.Directory.Providers
 %provide (FUIDT : FTy) with getUIDT
 %provide (FGIDT : FTy) with getGIDT
 %provide (FOffT : FTy) with getOffT
-%provide (FBlkSizeT : FTy) with BlksizeT
+%provide (FBlkSizeT : FTy) with getBlksizeT
 %provide (FBlkCntT : FTy) with getBlkcntT
 %provide (FTimeT : FTy) with getTimeT
-
-%include C "statbinds.h"
-%link C "statbinds.o"
 
 DevT : Type
 DevT = interpFTy FDevT
@@ -62,34 +64,47 @@ record StructStat : Type where
 -- actually needs to be a struct stat*, but we can't say that in the type :(
 adoptStructStat : Ptr -> IO StructStat
 adoptStructStat ptr = do
-   [| MkStat !dev !ino !mode !nlink !uid !gid !rdev !size !blksize !blks !atime !mtime !ctime |] ptr
+   dev <- dev' ptr
+   ino <- ino' ptr
+   mode <- mode' ptr
+   nlink <- nlink' ptr
+   uid <- uid' ptr
+   gid <- gid' ptr
+   rdev <- rdev' ptr
+   size <- size' ptr
+   blksize <- blksize' ptr
+   blks <- blks' ptr
+   atime <- atime' ptr
+   mtime <- mtime' ptr
+   ctime <- ctime' ptr
+   return $ MkStat dev ino mode nlink uid gid rdev size blksize blks atime mtime ctime
   where
-    dev : Ptr -> IO DevT
-    dev = mkForeign (FFun "get_st_dev" [FPtr] FDevT)
-    ino : Ptr -> InoT
-    ino = mkForeign (FFun "get_st_ino" [FPtr] FInoT)
-    mode : Ptr -> ModeT
-    mode = mkForeign (FFun "get_st_mode" [FPtr] FModeT)
-    nlink : Ptr -> NLinkT
-    nlink = mkForeign (FFun "get_st_nlink" [FPtr] FNLinkT)
-    uid : Ptr -> UIDT
-    uid = mkForeign (FFun "get_st_uid" [FPtr] FUIDT)
-    gid : Ptr -> GIDT
-    gid = mkForeign (FFun "get_st_gid" [FPtr] FGIDT)
-    rdev : Ptr -> DevT
-    rdev = mkForeign (FFun "get_st_rdev" [FPtr] FDevT)
-    size : Ptr -> OffT
-    size = mkForeign (FFun "get_st_size" [FPtr] FOffT)
-    blksize : Ptr -> BlkSizeT
-    blksize = mkForeign (FFun "get_st_blksize" [FPtr] FBlkSizeT)
-    blks : Ptr -> BlkCntT
-    blks = mkForeign (FFun "get_st_blks" [FPtr] FBlkCntT)
-    atime : Ptr -> TimeT
-    atime = mkForeign (FFun "get_st_atime" [FPtr] FTimeT)
-    mtime : Ptr -> TimeT
-    mtime = mkForeign (FFun "get_st_mtime" [FPtr] FTimeT)
-    ctime : Ptr -> TimeT
-    ctime = mkForeign (FFun "get_st_ctime" [FPtr] FTimeT)
+    dev' : Ptr -> IO DevT
+    dev' ptr = mkForeign (FFun "get_st_dev" [FPtr] FDevT) ptr
+    ino' : Ptr -> IO InoT
+    ino' ptr = mkForeign (FFun "get_st_ino" [FPtr] FInoT) ptr
+    mode' : Ptr -> IO ModeT
+    mode' ptr = mkForeign (FFun "get_st_mode" [FPtr] FModeT) ptr
+    nlink' : Ptr -> IO NLinkT
+    nlink' ptr = mkForeign (FFun "get_st_nlink" [FPtr] FNLinkT) ptr
+    uid' : Ptr -> IO UIDT
+    uid' ptr = mkForeign (FFun "get_st_uid" [FPtr] FUIDT) ptr
+    gid' : Ptr -> IO GIDT
+    gid' ptr = mkForeign (FFun "get_st_gid" [FPtr] FGIDT) ptr
+    rdev' : Ptr -> IO DevT
+    rdev' ptr = mkForeign (FFun "get_st_rdev" [FPtr] FDevT) ptr
+    size' : Ptr -> IO OffT
+    size' ptr = mkForeign (FFun "get_st_size" [FPtr] FOffT) ptr
+    blksize' : Ptr -> IO BlkSizeT
+    blksize' ptr = mkForeign (FFun "get_st_blksize" [FPtr] FBlkSizeT) ptr
+    blks' : Ptr -> IO BlkCntT
+    blks' ptr = mkForeign (FFun "get_st_blks" [FPtr] FBlkCntT) ptr
+    atime' : Ptr -> IO TimeT
+    atime' ptr = mkForeign (FFun "get_st_atime" [FPtr] FTimeT) ptr
+    mtime' : Ptr -> IO TimeT
+    mtime' ptr = mkForeign (FFun "get_st_mtime" [FPtr] FTimeT) ptr
+    ctime' : Ptr -> IO TimeT
+    ctime' ptr = mkForeign (FFun "get_st_ctime" [FPtr] FTimeT) ptr
 
 stat : String -> IO StructStat
 stat path = do
@@ -102,7 +117,7 @@ stat path = do
     alloc : IO Ptr
     alloc = mkForeign (FFun "alloc_stat_ptr" [] FPtr)
     do_stat : String -> Ptr -> IO ()
-    do_stat = mkForeign (FFun "stat" [FString, FPtr] FUnit)
+    do_stat name ptr = mkForeign (FFun "stat" [FString, FPtr] FUnit) name ptr
     free : Ptr -> IO ()
-    free = mkForeign (FFun "free_stat_ptr" [FPtr] FUnit)
+    free ptr = mkForeign (FFun "free_stat_ptr" [FPtr] FUnit) ptr
    
