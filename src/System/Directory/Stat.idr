@@ -2,6 +2,9 @@ module System.Directory.Stat
 
 import System.Directory.Providers
 
+%include C "stattypes.h"
+%link C "stattypes.o"
+
 %language TypeProviders
 
 %provide (FDevT : FTy) with getDevT
@@ -58,6 +61,35 @@ record StructStat : Type where
 
 -- actually needs to be a struct stat*, but we can't say that in the type :(
 adoptStructStat : Ptr -> IO StructStat
+adoptStructStat ptr = do
+   [| MkStat !dev !ino !mode !nlink !uid !gid !rdev !size !blksize !blks !atime !mtime !ctime |] ptr
+  where
+    dev : Ptr -> IO DevT
+    dev = mkForeign (FFun "get_st_dev" [FPtr] FDevT)
+    ino : Ptr -> InoT
+    ino = mkForeign (FFun "get_st_ino" [FPtr] FInoT)
+    mode : Ptr -> ModeT
+    mode = mkForeign (FFun "get_st_mode" [FPtr] FModeT)
+    nlink : Ptr -> NLinkT
+    nlink = mkForeign (FFun "get_st_nlink" [FPtr] FNLinkT)
+    uid : Ptr -> UIDT
+    uid = mkForeign (FFun "get_st_uid" [FPtr] FUIDT)
+    gid : Ptr -> GIDT
+    gid = mkForeign (FFun "get_st_gid" [FPtr] FGIDT)
+    rdev : Ptr -> DevT
+    rdev = mkForeign (FFun "get_st_rdev" [FPtr] FDevT)
+    size : Ptr -> OffT
+    size = mkForeign (FFun "get_st_size" [FPtr] FOffT)
+    blksize : Ptr -> BlkSizeT
+    blksize = mkForeign (FFun "get_st_blksize" [FPtr] FBlkSizeT)
+    blks : Ptr -> BlkCntT
+    blks = mkForeign (FFun "get_st_blks" [FPtr] FBlkCntT)
+    atime : Ptr -> TimeT
+    atime = mkForeign (FFun "get_st_atime" [FPtr] FTimeT)
+    mtime : Ptr -> TimeT
+    mtime = mkForeign (FFun "get_st_mtime" [FPtr] FTimeT)
+    ctime : Ptr -> TimeT
+    ctime = mkForeign (FFun "get_st_ctime" [FPtr] FTimeT)
 
 stat : String -> IO StructStat
 stat path = do

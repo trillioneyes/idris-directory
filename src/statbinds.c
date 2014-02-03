@@ -27,6 +27,7 @@ void free_stat_ptr(void* s) {
 }
 
 
+/*
 int main(int argc, char** argv) {
   DIR* home = opendir(argv[1]);
   if (!home) return 1;
@@ -45,3 +46,4 @@ int main(int argc, char** argv) {
   closedir(home);
   return 0;
 }
+*/
