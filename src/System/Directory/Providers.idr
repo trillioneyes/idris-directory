@@ -31,16 +31,17 @@ getSize getPtr = do
     free : Ptr -> IO ()
     free p = mkForeign (FFun "free_string" [FPtr] FUnit) p
 
-bytesToType : Int -> FTy
-bytesToType 1 = FIntT IT8
-bytesToType 2 = FIntT IT16
-bytesToType 4 = FIntT IT32
-bytesToType 8 = FIntT IT64
+bytesToType : Int -> Provider FTy
+bytesToType 1 = Provide $ FIntT IT8
+bytesToType 2 = Provide $ FIntT IT16
+bytesToType 4 = Provide $ FIntT IT32
+bytesToType 8 = Provide $ FIntT IT64
+bytesToType _ = Error "Size does not correspond to any integer type"
 
 
 -- use the given foreign function and size_t to look up a C type
 useForeign : IO Ptr -> IO (Provider FTy)
-useForeign getPtr = map (Provide . bytesToType) (getSize getPtr)
+useForeign getPtr = map bytesToType (getSize getPtr)
 
 getDevT : IO (Provider FTy)
 getDevT = useForeign (mkForeign (FFun "sizeof_dev_t" [] FPtr))
