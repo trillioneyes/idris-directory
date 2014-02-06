@@ -3,6 +3,7 @@ module System.Directory.Providers
 import Providers
 %link C "stattypes.o"
 %include C "stattypes.h"
+%dynamic "./stattypes.so"
 
 readInt : String -> Int
 readInt = readFromList . unpack
