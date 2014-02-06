@@ -1,9 +1,9 @@
 CFLAGS += -std=gnu99 
 
-providertest: providertest.idr stattypes.o System/Directory/Providers.idr
+providertest: providertest.idr stattypes.o System/Directory/Providers.idr stattypes.so
 	idris providertest.idr -o providertest
 
-stattest: System/Directory/Stat.idr System/Directory/Providers.idr stattypes.so statbinds.o statbinds.so
+stattest: System/Directory/Stat.idr System/Directory/Providers.idr stattypes.so statbinds.o statbinds.so stattest.idr
 	idris stattest.idr -o stattest
 
 stattypes.so: stattypes.c stattypes.h
