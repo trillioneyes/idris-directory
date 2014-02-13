@@ -106,18 +106,52 @@ adoptStructStat ptr = do
     ctime' : Ptr -> IO TimeT
     ctime' ptr = mkForeign (FFun "get_st_ctime" [FPtr] FTimeT) ptr
 
-stat : String -> IO StructStat
+-- the int is just the C errno
+stat : String -> IO (Either Int StructStat)
 stat path = do
    ptr <- alloc
-   do_stat path ptr
-   result <- adoptStructStat ptr
-   free ptr
-   return result
+   err <- do_stat path ptr
+   if err /= (-1)
+     then do
+       result <- adoptStructStat ptr
+       free ptr
+       return (Right result)
+     else map Left getError     
   where
     alloc : IO Ptr
     alloc = mkForeign (FFun "alloc_stat_ptr" [] FPtr)
-    do_stat : String -> Ptr -> IO ()
-    do_stat name ptr = mkForeign (FFun "stat" [FString, FPtr] FUnit) name ptr
+    do_stat : String -> Ptr -> IO Int
+    do_stat name ptr = mkForeign (FFun "stat" [FString, FPtr] FInt) name ptr
     free : Ptr -> IO ()
     free ptr = mkForeign (FFun "free_stat_ptr" [FPtr] FUnit) ptr
+    getError : IO Int
+    getError = mkForeign (FFun "get_err" [] FInt)
    
+
+
+-- Next, a nicer interface to StructStat
+data FileType = Regular | Directory | CharDev | BlockDev | FIFO | SymLink | Socket
+
+instance Show FileType where
+  show Regular = "Regular"
+  show Directory = "Directory"
+  show CharDev = "CharDev"
+  show BlockDev = "BlockDev"
+  show FIFO = "FIFO"
+  show SymLink = "SymLink"
+  show Socket = "Socket"
+
+modeToType : ModeT -> Maybe FileType
+modeToType x = interp (typeCode x) where
+  typeCode : ModeT -> Int
+  -- this is safe because it's just bit twiddling
+  typeCode x = unsafePerformIO $ mkForeign (FFun "file_type" [FModeT] FInt) x
+  interp : Int -> Maybe FileType
+  interp 0 = Just Regular
+  interp 1 = Just Directory
+  interp 2 = Just CharDev
+  interp 3 = Just BlockDev
+  interp 4 = Just FIFO
+  interp 5 = Just SymLink
+  interp 6 = Just Socket
+  interp _ = Nothing

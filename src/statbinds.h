@@ -1,5 +1,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <errno.h>
 
 dev_t get_st_dev(struct stat*s);
 ino_t get_st_ino(struct stat*s);
@@ -19,3 +20,5 @@ struct stat* alloc_stat_ptr();
 void free_stat_ptr(void* s);
 
 int file_type(mode_t m);
+
+int get_err();

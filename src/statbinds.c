@@ -1,7 +1,8 @@
-#include "stdlib.h"
-#include "sys/stat.h"
-#include "dirent.h"
-#include "stdio.h"
+#include "statbinds.h"
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <dirent.h>
+#include <stdio.h>
 
 // accessors
 dev_t get_st_dev(struct stat*s) {return s->st_dev;}
@@ -40,6 +41,8 @@ int file_type(mode_t m) {
   if (S_ISSOCK(m)) return 6;
   return 7;
 }
+
+int get_err() { return errno; }
 
 /*
 int main(int argc, char** argv) {
