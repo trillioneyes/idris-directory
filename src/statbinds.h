@@ -17,3 +17,5 @@ time_t get_st_ctime(struct stat*s);
 
 struct stat* alloc_stat_ptr();
 void free_stat_ptr(void* s);
+
+int file_type(mode_t m);

@@ -26,6 +26,20 @@ void free_stat_ptr(void* s) {
   free((struct stat*)s);
 }
 
+// Return a code for the file type instead of just extracting the relevant
+// bits because I'm paranoid
+// idris will then pattern match on the integer and we'll leave the whole
+// travesty behind us
+int file_type(mode_t m) {
+  if (S_ISREG(m)) return 0;
+  if (S_ISDIR(m)) return 1;
+  if (S_ISCHR(m)) return 2;
+  if (S_ISBLK(m)) return 3;
+  if (S_ISFIFO(m)) return 4;
+  if (S_ISLNK(m)) return 5;
+  if (S_ISSOCK(m)) return 6;
+  return 7;
+}
 
 /*
 int main(int argc, char** argv) {
